@@ -118,6 +118,17 @@ func TestObjectsAndObjectValues(t *testing.T) {
 		want []any
 	}{
 		{
+			desc: "Objects/nil element",
+			give: Objects("", []zapcore.ObjectMarshaler{
+				&fakeObject{value: "foo"},
+				nil,
+			}),
+			want: []any{
+				map[string]any{"value": "foo"},
+				nil,
+			},
+		},
+		{
 			desc: "Objects/nil slice",
 			give: Objects[*emptyObject]("", nil),
 			want: []any{},
@@ -273,6 +284,17 @@ func TestStringers(t *testing.T) {
 		give Field
 		want []any
 	}{
+		{
+			desc: "Stringers with nil element",
+			give: Stringers("", []fmt.Stringer{
+				stringerObject{value: "foo"},
+				nil,
+			}),
+			want: []any{
+				"foo",
+				nil,
+			},
+		},
 		{
 			desc: "Stringers",
 			give: Stringers("", []stringerObject{

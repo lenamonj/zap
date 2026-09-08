@@ -268,6 +268,24 @@ func TestObjectsAndObjectValues_marshalError(t *testing.T) {
 	}
 }
 
+// errReflectedArrayEncoder fails AppendReflected, the call a nil element
+// makes; every other method is never reached.
+type errReflectedArrayEncoder struct {
+	zapcore.ArrayEncoder
+}
+
+func (errReflectedArrayEncoder) AppendReflected(any) error {
+	return errors.New("append reflected failed")
+}
+
+func TestObjectsAndStringers_nilElementEncoderError(t *testing.T) {
+	t.Parallel()
+
+	enc := errReflectedArrayEncoder{}
+	assert.Error(t, objects[zapcore.ObjectMarshaler]{nil}.MarshalLogArray(enc))
+	assert.Error(t, stringers[fmt.Stringer]{nil}.MarshalLogArray(enc))
+}
+
 type stringerObject struct {
 	value string
 }
